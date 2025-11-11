@@ -1,19 +1,10 @@
 import os
 import tempfile
 import subprocess
-from telegram import (
-    Update,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup,
-)
-from telegram.ext import (
-    ApplicationBuilder,
-    CommandHandler,
-    MessageHandler,
-    CallbackQueryHandler,
-    filters,
-    ContextTypes,
-)
+import threading
+from flask import Flask
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, CallbackQueryHandler, filters, ContextTypes
 
 BOT_TOKEN = "8499926122:AAEPtX6EMisAIRC2IaRANyeflGdSmVXzv9I"
 
@@ -62,14 +53,13 @@ async def handle_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
         with tempfile.TemporaryDirectory() as tmpdir:
             out_template = os.path.join(tmpdir, "%(title)s.%(ext)s")
             cmd = [
-    "python", "-m", "yt_dlp",
-    "-f", "best",
-    "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-    "--no-warnings",
-    "-o", out_template,
-    text
-]
-
+                "python", "-m", "yt_dlp",
+                "-f", "best",
+                "--user-agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+                "--no-warnings",
+                "-o", out_template,
+                text
+            ]
 
             proc = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
             if proc.returncode != 0:
@@ -97,32 +87,29 @@ async def handle_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         await msg.edit_text(f"❌ خطا:\n{str(e)}")
 
-# --- راه‌اندازی ---
-def main():
-    app = ApplicationBuilder().token(BOT_TOKEN).build()
+# --- Flask برای Render ---
+web_app = Flask(__name__)
 
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CallbackQueryHandler(menu_handler))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_link))
-
-    print("🤖 Bot is running...")
-    from flask import Flask
-import threading
-
-app = Flask(__name__)
-
-@app.route("/")
+@web_app.route("/")
 def home():
     return "Bot is running!"
 
-# اجرای Flask در یک thread جدا
 def run_flask():
-    app.run(host="0.0.0.0", port=8000)
+    web_app.run(host="0.0.0.0", port=8000)
 
-threading.Thread(target=run_flask).start()
+# --- main ---
+def main():
+    # اجرای Flask در یک thread جدا
+    threading.Thread(target=run_flask).start()
 
-    app.run_polling()
+    # راه‌اندازی ربات تلگرام
+    bot_app = ApplicationBuilder().token(BOT_TOKEN).build()
+    bot_app.add_handler(CommandHandler("start", start))
+    bot_app.add_handler(CallbackQueryHandler(menu_handler))
+    bot_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_link))
+
+    print("🤖 Bot is running...")
+    bot_app.run_polling()
 
 if __name__ == "__main__":
     main()
-
