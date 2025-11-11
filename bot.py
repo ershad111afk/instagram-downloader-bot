@@ -106,7 +106,23 @@ def main():
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_link))
 
     print("🤖 Bot is running...")
+    from flask import Flask
+import threading
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "Bot is running!"
+
+# اجرای Flask در یک thread جدا
+def run_flask():
+    app.run(host="0.0.0.0", port=8000)
+
+threading.Thread(target=run_flask).start()
+
     app.run_polling()
 
 if __name__ == "__main__":
     main()
+
