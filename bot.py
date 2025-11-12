@@ -19,7 +19,7 @@ BOT_TOKEN = "8499926122:AAEPtX6EMisAIRC2IaRANyeflGdSmVXzv9I"
 
 # ✅ تابع بررسی عضویت
 async def is_member(user_id, context):
-    channel_username = "@evead_ir"  # 👈 نام کانالت
+    channel_username = "@mekayar_com"  # 👈 نام کانالت
     try:
         member = await context.bot.get_chat_member(chat_id=channel_username, user_id=user_id)
         return member.status in ["member", "administrator", "creator"]
@@ -32,7 +32,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
     if not await is_member(user_id, context):
         join_button = InlineKeyboardMarkup([
-            [InlineKeyboardButton("📢 عضویت در کانال", url="https://t.me/evead_ir")],
+            [InlineKeyboardButton("📢 عضویت در کانال", url="https://t.me/mekayar_com")],
             [InlineKeyboardButton("✅ بررسی عضویت", callback_data="check_member")]
         ])
         await update.message.reply_text(
@@ -63,7 +63,7 @@ async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await start(update, context)
         else:
             join_button = InlineKeyboardMarkup([
-                [InlineKeyboardButton("📢 عضویت در کانال", url="https://t.me/evead_ir")],
+                [InlineKeyboardButton("📢 عضویت در کانال", url="https://t.me/mekayar_com")],
                 [InlineKeyboardButton("✅ بررسی عضویت", callback_data="check_member")]
             ])
             await query.edit_message_text(
@@ -74,8 +74,8 @@ async def menu_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     elif query.data == "about":
         await query.edit_message_text(
-            "من ساختهٔ ارشاد اسماعیلی‌ام 😎\nکافیه لینک پست یا ریلز اینستاگرام رو بفرستی تا دانلودش کنم.\n\n"
-            "📌 نکته: پست باید عمومی باشه (Private نباشه).",
+            "من ساختهٔ تیم ایوادم 😎\nکافیه لینک پست یا ریلز اینستاگرام رو بفرستی تا دانلودش کنم.\n\n"
+            "📌 نکته: پست باید عمومی باشه (Private نباشه). تیم ایواد : طراحی سایت ، اپلیکیشن، ربات تلگرام، SEO، و خدمات گرافیکی",
             reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("🔙 بازگشت", callback_data="menu")]])
         )
     elif query.data == "download":
@@ -92,7 +92,7 @@ async def handle_link(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.message.from_user.id
     if not await is_member(user_id, context):
         join_button = InlineKeyboardMarkup([
-            [InlineKeyboardButton("📢 عضویت در کانال", url="https://t.me/evead_ir")],
+            [InlineKeyboardButton("📢 عضویت در کانال", url="https://t.me/mekayar_com")],
             [InlineKeyboardButton("✅ بررسی عضویت", callback_data="check_member")]
         ])
         await update.message.reply_text(
@@ -153,3 +153,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
